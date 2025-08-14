@@ -128,6 +128,26 @@ class SignalGUI:
         self.show_all_button.pack(pady=(0, 20), fill="x", padx=15)
 
         # Reset button
+        def update_slider_labels(self):
+            """Manually updates all slider labels to reflect current variable values."""
+            self.amp1_label.config(text=f"Amplitude: {self.amp1_var.get():.2f}")
+            self.freq1_label.config(text=f"Frequency: {self.freq1_var.get():.2f}")
+
+        # Update labels for Signal 2
+            self.amp2_label.config(text=f"Amplitude: {self.amp2_var.get():.2f}")
+            self.freq2_label.config(text=f"Frequency: {self.freq2_var.get():.2f}")
+            self.phase2_label.config(text=f"Phase (°): {self.phase2_var.get():.2f}")
+
+        # The parameter label's text depends on the current operation
+        operation = self.operation_type.get()
+        param_val = self.param_var.get()
+        if operation == "Time Shifting":
+            self.param_label.config(text=f"Shift (t₀): {param_val:.2f}")
+        elif operation == "Time Scaling":
+            self.param_label.config(text=f"Scaling factor (a): {param_val:.2f}")
+        elif operation == "Amplitude Scaling":
+            self.param_label.config(text=f"Amplitude (A): {param_val:.2f}")
+            
         self.reset_button = Button(control_frame, text="Reset to Default", font=("Helvetica Neue", 14, "bold"),
                                   command=self.reset_parameters, bg=self.theme["ACCENT_COLOR"], fg=self.theme["BTN_TEXT_COLOR"])
         self.reset_button.pack(pady=(0, 10), fill="x", padx=15)
@@ -260,15 +280,13 @@ class SignalGUI:
         t_min, t_max = 0, 1
         if operation == "Time Shifting":
             t0 = params["param"]
-            t_min = min(0, 0 - t0)
-            t_max = max(0, 1 - t0)
+            t_min = 0 + t0
+            t_max = 1 + t0
         elif operation == "Time Scaling":
             a = params["param"]
             if a != 0:
-                scaled_min = -1 / a
-                scaled_max = 1 / a
-                t_min = min(-1, scaled_min)
-                t_max = max(1, scaled_max)
+                t_min = 0 / a
+                t_max = 1 / a
         elif operation == "Time Reversal":
             t_min, t_max = -1, 1
         elif params["signal_type"] in ["Ramp", "Impulse", "Step"]:
